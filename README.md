@@ -12,7 +12,9 @@ OpenCode Go exposes OpenAI-compatible Chat Completions. This proxy exposes
 Run the installer and enter your OpenCode Go key when prompted:
 
 ```bash
-/home/kuro/my_code/opencode-go-codex/install.sh
+git clone https://github.com/YOUR_NAME/opencode-go-codex.git
+cd opencode-go-codex
+./install.sh
 ```
 
 It will:
@@ -35,7 +37,7 @@ codex -p deepseek-v4-flash
 
 ```bash
 export OPENCODE_GO_API_KEY="..."
-/home/kuro/my_code/opencode-go-codex/start.sh
+./start.sh
 ```
 
 Optional environment variables:
@@ -76,7 +78,7 @@ codex -p opencode-go -m deepseek-v4-pro
 The recommended model catalog is the DeepSeek-only one:
 
 ```toml
-model_catalog_json = "/home/kuro/my_code/opencode-go-codex/models.deepseek-only.json"
+model_catalog_json = "/path/to/opencode-go-codex/models.deepseek-only.json"
 ```
 
 It only exposes `deepseek-v4-pro` and `deepseek-v4-flash`, defaults them to
@@ -87,7 +89,7 @@ If web search is not exposed with `--search`, point Codex at the example model
 catalog as well:
 
 ```toml
-model_catalog_json = "/home/kuro/my_code/opencode-go-codex/models.opencode-go.example.json"
+model_catalog_json = "/path/to/opencode-go-codex/models.opencode-go.example.json"
 ```
 
 The example catalog marks `deepseek-v4-pro` and `deepseek-v4-flash` as
@@ -97,7 +99,7 @@ On Codex 0.126, native `--search` may still be withheld from custom providers.
 Use the bundled MCP fallback when you need stable web search with OpenCode Go:
 
 ```bash
-codex mcp add web-search -- /home/kuro/my_code/opencode-go-codex/web_search_mcp.py
+codex mcp add web-search -- /path/to/opencode-go-codex/web_search_mcp.py
 ```
 
 A matching local skill is installed at `~/.codex/skills/web-search-mcp`. If

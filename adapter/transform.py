@@ -39,6 +39,24 @@ def responses_input_to_messages(request, server=None):
         messages.append(assistant_message)
         assistant_message = None
 
+    def append_message_item(item):
+        role = item.get("role", "user")
+        if role in ("developer", "system"):
+            role = "system"
+        elif role not in ("user", "assistant", "tool"):
+            role = "user"
+        content = content_to_chat(item.get("content"))
+        if role == "assistant":
+            assistant = ensure_assistant()
+            if content:
+                assistant["content"] = content if not assistant.get("content") else assistant["content"] + "\n" + content
+            reasoning_content = extract_reasoning_content(item)
+            if reasoning_content:
+                assistant["reasoning_content"] = reasoning_content
+        else:
+            flush_assistant()
+            messages.append({"role": role, "content": content})
+
     for item in response_input:
         if not isinstance(item, dict):
             flush_assistant()
@@ -46,23 +64,8 @@ def responses_input_to_messages(request, server=None):
             continue
 
         item_type = item.get("type")
-        if item_type == "message":
-            role = item.get("role", "user")
-            if role in ("developer", "system"):
-                role = "system"
-            elif role not in ("user", "assistant", "tool"):
-                role = "user"
-            content = content_to_chat(item.get("content"))
-            if role == "assistant":
-                assistant = ensure_assistant()
-                if content:
-                    assistant["content"] = content if not assistant.get("content") else assistant["content"] + "\n" + content
-                reasoning_content = extract_reasoning_content(item)
-                if reasoning_content:
-                    assistant["reasoning_content"] = reasoning_content
-            else:
-                flush_assistant()
-                messages.append({"role": role, "content": content})
+        if item_type == "message" or (item_type is None and ("role" in item or "content" in item)):
+            append_message_item(item)
         elif item_type == "function_call":
             call_id = item.get("call_id") or item.get("id") or "call_unknown"
             assistant = ensure_assistant()

@@ -20,7 +20,7 @@ def content_to_chat(content):
             if item_type in ("input_text", "output_text", "text"):
                 parts.append({"type": "text", "text": str(item.get("text", ""))})
             elif item_type in ("input_image", "image_url"):
-                image_url = item.get("image_url") or item.get("url")
+                image_url = image_url_to_chat_value(item.get("image_url") or item.get("url"))
                 if not image_url and item.get("image_base64"):
                     mime = item.get("media_type") or "image/png"
                     image_url = f"data:{mime};base64,{item['image_base64']}"
@@ -47,13 +47,18 @@ def content_to_chat(content):
     return str(content)
 
 
-def looks_like_image_url(value):
+def image_url_to_chat_value(value):
     if isinstance(value, str):
-        return bool(value)
+        return value
     if isinstance(value, dict):
         url = value.get("url")
-        return isinstance(url, str) and bool(url)
-    return False
+        if isinstance(url, str):
+            return url
+    return None
+
+
+def looks_like_image_url(value):
+    return bool(image_url_to_chat_value(value))
 
 
 def value_has_image(value):

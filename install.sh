@@ -114,6 +114,19 @@ def set_root(key, value):
     else:
         text = text.rstrip() + "\n" + line + "\n"
 
+def set_root_raw(key, value):
+    global text
+    line = f'{key} = {value}'
+    pattern = re.compile(rf'^{re.escape(key)}\s*=.*$', re.M)
+    if pattern.search(text):
+        text = pattern.sub(line, text, count=1)
+        return
+    first_table = re.search(r'^\[', text, re.M)
+    if first_table:
+        text = text[:first_table.start()] + line + "\n" + text[first_table.start():]
+    else:
+        text = text.rstrip() + "\n" + line + "\n"
+
 def remove_table(name):
     global text
     pattern = re.compile(rf'^\[{re.escape(name)}\]\n.*?(?=^\[|\Z)', re.M | re.S)
@@ -127,8 +140,8 @@ def append_table(name, body):
 set_root("model_catalog_json", model_catalog)
 set_root("model_reasoning_effort", "xhigh")
 set_root("model_verbosity", "low")
-set_root("model_context_window", "512000")
-set_root("model_auto_compact_token_limit", "400000")
+set_root_raw("model_context_window", "512000")
+set_root_raw("model_auto_compact_token_limit", "400000")
 
 append_table("model_providers.OpenCodeGo", '''
 name = "OpenCodeGo"

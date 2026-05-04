@@ -4,14 +4,14 @@ After=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/kuro/my_code/opencode-go-codex
+WorkingDirectory=/path/to/opencode-go-codex
 Environment=OPENCODE_GO_CODEX_PORT=8768
 Environment=OPENCODE_GO_MODEL=deepseek-v4-pro
 Environment=OPENCODE_GO_COMPACT_MODEL=deepseek-v4-flash
 Environment=OPENCODE_GO_VISION_MODEL=kimi-k2.6
 Environment=OPENCODE_GO_TIMEOUT=900
 Environment=OPENCODE_GO_API_KEY=replace-with-your-key-or-use-an-env-file
-ExecStart=/home/kuro/my_code/opencode-go-codex/start.sh
+ExecStart=/path/to/opencode-go-codex/start.sh
 Restart=on-failure
 RestartSec=3
 

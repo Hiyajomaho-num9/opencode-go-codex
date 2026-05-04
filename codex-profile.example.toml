@@ -2,7 +2,7 @@
 #
 # Start the proxy first:
 #   export OPENCODE_GO_API_KEY=...
-#   /home/kuro/my_code/opencode-go-codex/start.sh
+#   ./start.sh
 #
 # Then run:
 #   codex -p opencode-go -m deepseek-v4-pro

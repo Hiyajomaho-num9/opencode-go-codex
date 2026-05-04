@@ -67,7 +67,7 @@ def value_has_image(value):
         if item_type in ("input_image", "image_url") and looks_like_image_url(image_url):
             return True
         image_base64 = value.get("image_base64")
-        if item_type == "input_image" and isinstance(image_base64, str) and image_base64:
+        if item_type in ("input_image", "image_url") and isinstance(image_base64, str) and image_base64:
             return True
         return any(value_has_image(child) for child in value.values())
     return False

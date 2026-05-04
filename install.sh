@@ -4,12 +4,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 CONFIG="$CODEX_HOME/config.toml"
-MODEL_CATALOG="$ROOT/models.deepseek-only.json"
+MODEL_CATALOG="$ROOT/examples/models/deepseek-only.json"
 ENV_DIR="$HOME/.config/opencode-go-codex"
 ENV_FILE="$ENV_DIR/env"
 UNIT_DIR="$HOME/.config/systemd/user"
 UNIT_FILE="$UNIT_DIR/opencode-go-codex.service"
-MCP_SCRIPT="$ROOT/web_search_mcp.py"
+MCP_SCRIPT="$ROOT/tools/web_search_mcp.py"
 
 say() {
   printf '%s\n' "$*"

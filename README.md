@@ -22,7 +22,7 @@ The installer will:
 
 - Write `~/.config/opencode-go-codex/env` with `0600` permissions.
 - Install `~/.config/systemd/user/opencode-go-codex.service`.
-- Point Codex at `models.deepseek-only.json`.
+- Point Codex at `examples/models/deepseek-only.json`.
 - Add `deepseek-v4-pro` and `deepseek-v4-flash` profiles.
 - Register the bundled web-search MCP fallback and local skill.
 - Start the service and run a minimal Codex profile check.
@@ -63,13 +63,13 @@ Routing rules:
   `reasoning_effort: "max"`, the full reasoning tier. Codex
   `model_reasoning_effort = "xhigh"` is also mapped to OpenCode Go's `"max"`.
 
-See `DEEPSEEK_API_NOTES.md` for the exact DeepSeek-style Chat Completions
+See `docs/deepseek-api-notes.md` for the exact DeepSeek-style Chat Completions
 fields forwarded by the adapter.
 
 ## Codex Config
 
 The installer updates `~/.codex/config.toml` automatically. For manual setup,
-add the contents of `codex-profile.example.toml` to your config, then run:
+add the contents of `examples/codex/profile.example.toml` to your config, then run:
 
 ```bash
 codex -p opencode-go -m deepseek-v4-pro
@@ -78,7 +78,7 @@ codex -p opencode-go -m deepseek-v4-pro
 The recommended model catalog is the DeepSeek-only catalog:
 
 ```toml
-model_catalog_json = "/path/to/opencode-go-codex/models.deepseek-only.json"
+model_catalog_json = "/path/to/opencode-go-codex/examples/models/deepseek-only.json"
 ```
 
 It only exposes `deepseek-v4-pro` and `deepseek-v4-flash`, defaults them to
@@ -94,7 +94,7 @@ If `--search` does not expose web search, you can also point Codex at the
 example model catalog:
 
 ```toml
-model_catalog_json = "/path/to/opencode-go-codex/models.opencode-go.example.json"
+model_catalog_json = "/path/to/opencode-go-codex/examples/models/opencode-go.example.json"
 ```
 
 The example catalog marks `deepseek-v4-pro` and `deepseek-v4-flash` as
@@ -104,7 +104,7 @@ On Codex 0.126, native `--search` may still be withheld from custom providers.
 Use the bundled MCP fallback if you need stable web search with OpenCode Go:
 
 ```bash
-codex mcp add web-search -- /path/to/opencode-go-codex/web_search_mcp.py
+codex mcp add web-search -- /path/to/opencode-go-codex/tools/web_search_mcp.py
 ```
 
 The installer also installs a matching local skill at
@@ -127,7 +127,7 @@ codex exec --skip-git-repo-check --ephemeral \
 
 ## systemd User Service
 
-Copy `opencode-go-codex.service.example` to
+Copy `examples/systemd/opencode-go-codex.service` to
 `~/.config/systemd/user/opencode-go-codex.service`, replace the key line or use
 an `EnvironmentFile`, then run:
 

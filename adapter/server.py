@@ -1,6 +1,7 @@
 import json
 import os
 import threading
+import traceback
 import urllib.error
 import urllib.request
 import uuid
@@ -53,6 +54,8 @@ class ProxyHandler(BaseHTTPRequestHandler):
             self.log_route(path, has_image, chat_request)
             self.forward_request(chat_request)
         except Exception as exc:
+            print("request failed:", repr(exc), flush=True)
+            traceback.print_exc()
             self.send_json_error(500, str(exc))
 
     def log_route(self, path, has_image, chat_request):

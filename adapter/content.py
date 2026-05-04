@@ -47,8 +47,13 @@ def content_to_chat(content):
     return str(content)
 
 
-IMAGE_TYPE_MARKERS = {"input_image", "image_url"}
-IMAGE_KEY_MARKERS = {"image_url", "image_base64"}
+def looks_like_image_url(value):
+    if isinstance(value, str):
+        return bool(value)
+    if isinstance(value, dict):
+        url = value.get("url")
+        return isinstance(url, str) and bool(url)
+    return False
 
 
 def value_has_image(value):
@@ -58,9 +63,11 @@ def value_has_image(value):
         return any(value_has_image(item) for item in value)
     if isinstance(value, dict):
         item_type = value.get("type")
-        if item_type in IMAGE_TYPE_MARKERS:
+        image_url = value.get("image_url") or value.get("url")
+        if item_type in ("input_image", "image_url") and looks_like_image_url(image_url):
             return True
-        if any(key in value and value.get(key) for key in IMAGE_KEY_MARKERS):
+        image_base64 = value.get("image_base64")
+        if item_type == "input_image" and isinstance(image_base64, str) and image_base64:
             return True
         return any(value_has_image(child) for child in value.values())
     return False

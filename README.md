@@ -1,11 +1,12 @@
 # opencode-go-codex
 
-Local adapter that lets Codex use an OpenCode Go subscription.
+A local 2api tool that translates OpenCode Go Chat Completions into the
+Responses API.
 
-Codex 0.126 only accepts `wire_api = "responses"` for custom providers, while
-OpenCode Go exposes OpenAI-compatible Chat Completions. This proxy exposes
-`/v1/responses` locally and forwards requests to OpenCode Go
-`/v1/chat/completions`.
+This tool currently targets DeepSeek V4 models only. It uses Kimi 2.6 and the
+custom `web_search_mcp` tool to fill the image recognition and web search gaps.
+GLM 5.1 support may be considered later if needed, mainly because the GLM 5.1
+API interface is much more complex.
 
 ## Install
 
@@ -17,7 +18,7 @@ cd opencode-go-codex
 ./install.sh
 ```
 
-It will:
+The installer will:
 
 - Write `~/.config/opencode-go-codex/env` with `0600` permissions.
 - Install `~/.config/systemd/user/opencode-go-codex.service`.
@@ -26,7 +27,7 @@ It will:
 - Register the bundled web-search MCP fallback and local skill.
 - Start the service and run a minimal Codex profile check.
 
-After install:
+After installation:
 
 ```bash
 codex -p deepseek-v4-pro
@@ -53,15 +54,14 @@ export OPENCODE_GO_TIMEOUT="900"
 export OPENCODE_GO_DEBUG_ROUTING="1"
 ```
 
-Routing:
+Routing rules:
 
 - Normal Codex requests use `OPENCODE_GO_MODEL`, default `deepseek-v4-pro`.
-- `/v1/responses/compact` uses `OPENCODE_GO_COMPACT_MODEL`, default `deepseek-v4-flash`.
+- `/compact` uses `OPENCODE_GO_COMPACT_MODEL`, default `deepseek-v4-flash`.
 - Requests containing image input anywhere in the Codex request use `OPENCODE_GO_VISION_MODEL`, default `kimi-k2.6`.
 - `deepseek-v4-pro` and `deepseek-v4-flash` default to
-  `reasoning_effort: "max"` so they run in the full reasoning tier. Codex
-  `model_reasoning_effort = "xhigh"` is also mapped to OpenCode Go's `"max"`
-  value.
+  `reasoning_effort: "max"`, the full reasoning tier. Codex
+  `model_reasoning_effort = "xhigh"` is also mapped to OpenCode Go's `"max"`.
 
 See `DEEPSEEK_API_NOTES.md` for the exact DeepSeek-style Chat Completions
 fields forwarded by the adapter.
@@ -69,24 +69,29 @@ fields forwarded by the adapter.
 ## Codex Config
 
 The installer updates `~/.codex/config.toml` automatically. For manual setup,
-add the contents of `codex-profile.example.toml`, then run:
+add the contents of `codex-profile.example.toml` to your config, then run:
 
 ```bash
 codex -p opencode-go -m deepseek-v4-pro
 ```
 
-The recommended model catalog is the DeepSeek-only one:
+The recommended model catalog is the DeepSeek-only catalog:
 
 ```toml
 model_catalog_json = "/path/to/opencode-go-codex/models.deepseek-only.json"
 ```
 
 It only exposes `deepseek-v4-pro` and `deepseek-v4-flash`, defaults them to
-`xhigh`, uses low verbosity, and sets the Codex context knobs for 512k context
-with a 400k auto-compact threshold.
+`xhigh`, uses low verbosity, and sets Codex context knobs to 512k context with
+a 400k auto-compact threshold.
 
-If web search is not exposed with `--search`, point Codex at the example model
-catalog as well:
+The reason this does not use 1M context by default is that DeepSeek's
+hallucination rate becomes too high after roughly 800k tokens. 512k is enough
+for current usage. If you need to search PDF contents, set context to 800k and
+auto-compact to 720k.
+
+If `--search` does not expose web search, you can also point Codex at the
+example model catalog:
 
 ```toml
 model_catalog_json = "/path/to/opencode-go-codex/models.opencode-go.example.json"
@@ -96,15 +101,16 @@ The example catalog marks `deepseek-v4-pro` and `deepseek-v4-flash` as
 `supports_search_tool: true`, and marks `kimi-k2.6` as text+image capable.
 
 On Codex 0.126, native `--search` may still be withheld from custom providers.
-Use the bundled MCP fallback when you need stable web search with OpenCode Go:
+Use the bundled MCP fallback if you need stable web search with OpenCode Go:
 
 ```bash
 codex mcp add web-search -- /path/to/opencode-go-codex/web_search_mcp.py
 ```
 
-A matching local skill is installed at `~/.codex/skills/web-search-mcp`. If
-Codex does not expose arbitrary MCP tools directly in CLI mode, invoke
-`$web-search-mcp`; it calls the same backend through shell JSON-RPC.
+The installer also installs a matching local skill at
+`~/.codex/skills/web-search-mcp`. If Codex CLI mode does not expose arbitrary
+MCP tools directly, invoke `$web-search-mcp`; it calls the same backend through
+shell JSON-RPC.
 
 For one-off testing without editing `~/.codex/config.toml`:
 
@@ -119,7 +125,7 @@ codex exec --skip-git-repo-check --ephemeral \
   'Reply exactly OK.'
 ```
 
-## Systemd User Service
+## systemd User Service
 
 Copy `opencode-go-codex.service.example` to
 `~/.config/systemd/user/opencode-go-codex.service`, replace the key line or use

@@ -1,0 +1,173 @@
+{
+  "fetched_at": "2026-05-03T00:00:00Z",
+  "client_version": "0.126.0-alpha.8",
+  "models": [
+    {
+      "slug": "deepseek-v4-pro",
+      "display_name": "DeepSeek V4 Pro",
+      "description": "DeepSeek V4 Pro through opencode-go-codex.",
+      "default_reasoning_level": "medium",
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning"
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth"
+        },
+        {
+          "effort": "high",
+          "description": "Greater reasoning depth"
+        },
+        {
+          "effort": "xhigh",
+          "description": "Extra reasoning depth"
+        }
+      ],
+      "shell_type": "shell_command",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 1,
+      "availability_nux": null,
+      "upgrade": null,
+      "base_instructions": "You are Codex, a coding agent. Be concise, pragmatic, and accurate.",
+      "model_messages": {
+        "instructions_template": "{{ base_instructions }}\n\n{{ personality }}",
+        "instructions_variables": {
+          "base_instructions": "You are Codex, a coding agent. Be concise, pragmatic, and accurate."
+        }
+      },
+      "supports_reasoning_summaries": true,
+      "default_reasoning_summary": "none",
+      "support_verbosity": true,
+      "default_verbosity": "low",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": true,
+      "supports_image_detail_original": true,
+      "context_window": 64000,
+      "effective_context_window_percent": 95,
+      "experimental_supported_tools": [],
+      "input_modalities": [
+        "text"
+      ],
+      "supports_search_tool": true,
+      "max_context_window": 64000,
+      "auto_compact_token_limit": 48000
+    },
+    {
+      "slug": "deepseek-v4-flash",
+      "display_name": "DeepSeek V4 Flash",
+      "description": "DeepSeek V4 Flash through opencode-go-codex.",
+      "default_reasoning_level": "medium",
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning"
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth"
+        },
+        {
+          "effort": "high",
+          "description": "Greater reasoning depth"
+        },
+        {
+          "effort": "xhigh",
+          "description": "Extra reasoning depth"
+        }
+      ],
+      "shell_type": "shell_command",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 0,
+      "availability_nux": null,
+      "upgrade": null,
+      "base_instructions": "You are Codex, a coding agent. Be concise, pragmatic, and accurate.",
+      "model_messages": {
+        "instructions_template": "{{ base_instructions }}\n\n{{ personality }}",
+        "instructions_variables": {
+          "base_instructions": "You are Codex, a coding agent. Be concise, pragmatic, and accurate."
+        }
+      },
+      "supports_reasoning_summaries": true,
+      "default_reasoning_summary": "none",
+      "support_verbosity": true,
+      "default_verbosity": "low",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": true,
+      "supports_image_detail_original": true,
+      "context_window": 64000,
+      "effective_context_window_percent": 95,
+      "experimental_supported_tools": [],
+      "input_modalities": [
+        "text"
+      ],
+      "supports_search_tool": true,
+      "max_context_window": 64000,
+      "auto_compact_token_limit": 48000
+    },
+    {
+      "slug": "kimi-k2.6",
+      "display_name": "Kimi K2.6",
+      "description": "Kimi K2.6 vision fallback through opencode-go-codex.",
+      "default_reasoning_level": "medium",
+      "supported_reasoning_levels": [
+        {
+          "effort": "low",
+          "description": "Fast responses"
+        },
+        {
+          "effort": "medium",
+          "description": "Balanced responses"
+        }
+      ],
+      "shell_type": "shell_command",
+      "visibility": "hide",
+      "supported_in_api": true,
+      "priority": -1,
+      "availability_nux": null,
+      "upgrade": null,
+      "base_instructions": "You are Codex, a coding agent. Be concise, pragmatic, and accurate.",
+      "model_messages": {
+        "instructions_template": "{{ base_instructions }}\n\n{{ personality }}",
+        "instructions_variables": {
+          "base_instructions": "You are Codex, a coding agent. Be concise, pragmatic, and accurate."
+        }
+      },
+      "supports_reasoning_summaries": false,
+      "default_reasoning_summary": "none",
+      "support_verbosity": true,
+      "default_verbosity": "low",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": false,
+      "supports_image_detail_original": true,
+      "context_window": 128000,
+      "effective_context_window_percent": 95,
+      "experimental_supported_tools": [],
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "supports_search_tool": false,
+      "max_context_window": 128000,
+      "auto_compact_token_limit": 96000
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+# Add this to ~/.codex/config.toml if you want a separate profile.
+#
+# Start the proxy first:
+#   export OPENCODE_GO_API_KEY=...
+#   /home/kuro/my_code/opencode-go-codex/start.sh
+#
+# Then run:
+#   codex -p opencode-go -m deepseek-v4-pro
+
+[profiles.opencode-go]
+model_provider = "OpenCodeGo"
+model = "deepseek-v4-pro"
+model_reasoning_effort = "xhigh"
+model_verbosity = "low"
+
+[model_providers.OpenCodeGo]
+name = "OpenCodeGo"
+base_url = "http://127.0.0.1:8768/v1"
+wire_api = "responses"

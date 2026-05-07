@@ -53,4 +53,9 @@ value = "kept"
 	if !strings.Contains(text, `model_context_window = 512000`) || !strings.Contains(text, `model_auto_compact_token_limit = 400000`) {
 		t.Fatalf("numeric root config missing:\n%s", text)
 	}
+	for _, rootLine := range []string{`model_provider = "OpenCodeGo"`, `model = "deepseek-v4-pro"`, `review_model = "deepseek-v4-pro"`} {
+		if !strings.Contains(text, rootLine) {
+			t.Fatalf("root default missing %q:\n%s", rootLine, text)
+		}
+	}
 }

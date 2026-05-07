@@ -26,6 +26,9 @@ func Patch(configPath, modelCatalog, mcpScript string) error {
 	}
 	text := string(b)
 	text = setRoot(text, "model_catalog_json", quote(modelCatalog))
+	text = setRoot(text, "model_provider", quote("OpenCodeGo"))
+	text = setRoot(text, "model", quote("deepseek-v4-pro"))
+	text = setRoot(text, "review_model", quote("deepseek-v4-pro"))
 	text = setRoot(text, "model_reasoning_effort", quote("xhigh"))
 	text = setRoot(text, "model_verbosity", quote("low"))
 	text = setRoot(text, "model_context_window", "512000")

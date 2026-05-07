@@ -64,8 +64,6 @@ Retry once after a short sleep if the backend returns a transient network or rat
   Set-Content -Path (Join-Path $skillDir "SKILL.md") -Value $skill -Encoding UTF8
 }
 
-Need-Command go
-
 $root = $PSScriptRoot
 $binary = Join-Path $root "opencode-go-codex.exe"
 $codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME ".codex" }
@@ -75,11 +73,14 @@ $mcpScript = Join-Path $root "tools\web_search_mcp.py"
 
 Say "OpenCode Go Codex Windows installer"
 Say "Project: $root"
-Say "This will build the adapter, write user environment variables, update Codex profiles, and install the web-search fallback skill."
+Say "This will use opencode-go-codex.exe, write user environment variables, update Codex profiles, and install the web-search fallback skill."
 
 if (-not (Test-Path $binary)) {
+  Need-Command go
   Say "Building Go adapter: $binary"
   go build -o $binary .\cmd\opencode-go-codex
+} else {
+  Say "Using existing adapter binary: $binary"
 }
 
 $apiKey = Read-ApiKey
@@ -115,4 +116,3 @@ Say "Install complete."
 Say "Start the adapter with: .\start.ps1"
 Say "Use Codex with: codex -p deepseek-v4-pro"
 Say "Use Codex with: codex -p deepseek-v4-flash"
-

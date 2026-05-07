@@ -37,7 +37,8 @@ The Linux installer will:
 
 The Windows installer will:
 
-- Build or reuse `opencode-go-codex.exe`.
+- Reuse `opencode-go-codex.exe` from the release package, or build it with Go if
+  the binary is missing.
 - Write user-level `OPENCODE_GO_*` environment variables.
 - Point Codex at `examples/models/deepseek-only.json`.
 - Add `deepseek-v4-pro` and `deepseek-v4-flash` profiles.

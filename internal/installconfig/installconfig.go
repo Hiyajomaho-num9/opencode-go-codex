@@ -68,8 +68,20 @@ func appendTable(text, name, body string) string {
 }
 
 func removeTable(text, name string) string {
-	re := regexp.MustCompile(`(?ms)^\[` + regexp.QuoteMeta(name) + `\]\n.*?(?=^\[|\z)`)
-	return re.ReplaceAllString(text, "")
+	lines := strings.SplitAfter(text, "\n")
+	out := strings.Builder{}
+	inTarget := false
+	targetHeader := "[" + name + "]"
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "[") {
+			inTarget = trimmed == targetHeader
+		}
+		if !inTarget {
+			out.WriteString(line)
+		}
+	}
+	return out.String()
 }
 
 func quote(value string) string { return `"` + escape(value) + `"` }

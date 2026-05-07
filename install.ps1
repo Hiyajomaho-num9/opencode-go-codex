@@ -109,6 +109,9 @@ if (Test-Path $config) {
 }
 
 & $binary install-config $config $modelCatalog $mcpScript
+if ($LASTEXITCODE -ne 0) {
+  throw "install-config failed with exit code $LASTEXITCODE"
+}
 
 Install-Skill -CodexHome $codexHome -McpScript $mcpScript
 

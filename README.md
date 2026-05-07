@@ -10,7 +10,7 @@ API interface is much more complex.
 
 ## Install
 
-Run the installer and enter your OpenCode Go key when prompted:
+Linux:
 
 ```bash
 git clone https://github.com/YOUR_NAME/opencode-go-codex.git
@@ -18,7 +18,15 @@ cd opencode-go-codex
 ./install.sh
 ```
 
-The installer will:
+Windows PowerShell:
+
+```powershell
+git clone https://github.com/YOUR_NAME/opencode-go-codex.git
+cd opencode-go-codex
+.\install.ps1
+```
+
+The Linux installer will:
 
 - Write `~/.config/opencode-go-codex/env` with `0600` permissions.
 - Install `~/.config/systemd/user/opencode-go-codex.service`.
@@ -26,6 +34,14 @@ The installer will:
 - Add `deepseek-v4-pro` and `deepseek-v4-flash` profiles.
 - Register the bundled web-search MCP fallback and local skill.
 - Start the service and run a minimal Codex profile check.
+
+The Windows installer will:
+
+- Build or reuse `opencode-go-codex.exe`.
+- Write user-level `OPENCODE_GO_*` environment variables.
+- Point Codex at `examples/models/deepseek-only.json`.
+- Add `deepseek-v4-pro` and `deepseek-v4-flash` profiles.
+- Register the bundled web-search MCP fallback and local skill.
 
 After installation:
 

@@ -140,4 +140,4 @@ Those are either OpenAI Responses-specific, unsupported by the documented
 DeepSeek Chat Completions schema, or not known to be accepted by OpenCode Go.
 
 If OpenCode Go later documents extra supported fields, add them explicitly in
-`adapter/transform.py` instead of blindly copying the full Codex request.
+`internal/transform` instead of blindly copying the full Codex request.

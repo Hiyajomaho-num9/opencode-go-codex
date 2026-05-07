@@ -6,8 +6,8 @@ compatibility behavior without building a large framework.
 ## Local Unit Tests
 
 ```bash
-python3 -m compileall -q adapter opencode_go_codex.py tools/web_search_mcp.py
-python3 -m unittest discover -s tests
+go test ./...
+go build -o opencode-go-codex ./cmd/opencode-go-codex
 ```
 
 Covered areas:
@@ -48,13 +48,13 @@ export OPENCODE_GO_TRACE_DIR=/tmp/opencode-go-codex-trace
 Each request gets its own directory. Summarize a trace:
 
 ```bash
-tools/replay_trace.py /tmp/opencode-go-codex-trace/TRACE_ID --summary
+./opencode-go-codex replay /tmp/opencode-go-codex-trace/TRACE_ID --summary
 ```
 
 Replay as SSE:
 
 ```bash
-tools/replay_trace.py /tmp/opencode-go-codex-trace/TRACE_ID
+./opencode-go-codex replay /tmp/opencode-go-codex-trace/TRACE_ID
 ```
 
 ## Doctor
@@ -62,18 +62,18 @@ tools/replay_trace.py /tmp/opencode-go-codex-trace/TRACE_ID
 Check local setup:
 
 ```bash
-python3 opencode_go_codex.py doctor
+./opencode-go-codex doctor
 ```
 
-This verifies Python, Codex config hints, model catalog, MCP script, compileall,
-API-key environment, and whether the adapter port is reachable.
+This verifies the Go runtime, Codex config hints, model catalog, API-key
+environment, and whether the adapter port is reachable.
 
 ## Regression Checklist Before Release
 
 ```bash
-python3 -m compileall -q adapter opencode_go_codex.py tools/web_search_mcp.py
-python3 -m unittest discover -s tests
-python3 opencode_go_codex.py doctor
+go test ./...
+go build -o opencode-go-codex ./cmd/opencode-go-codex
+./opencode-go-codex doctor
 ```
 
 If the service is running with a valid key:

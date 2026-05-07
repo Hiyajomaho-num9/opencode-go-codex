@@ -18,7 +18,7 @@ Responses field.
 
 ## Request Normalization
 
-The main conversion lives in `adapter/transform.py` and `adapter/content.py`.
+The main conversion lives in `internal/transform` and `internal/content`.
 
 | Codex / Responses input | Chat Completions output |
 | --- | --- |
@@ -74,7 +74,7 @@ unless the request or environment explicitly disables thinking.
 
 ## Response Rendering
 
-The response path lives in `adapter/sse.py`.
+The response path lives in `internal/sse`.
 
 Non-streaming upstream responses are rendered as Responses SSE events so Codex
 sees the same wire API. Streaming upstream responses are parsed from Chat
@@ -96,7 +96,7 @@ These fields are currently ignored unless explicitly implemented later:
 - `metadata`
 - `store`
 
-Add new passthrough fields deliberately in `adapter/transform.py`; do not copy
+Add new passthrough fields deliberately in `internal/transform`; do not copy
 the full Codex request blindly.
 
 ## Trace Format
@@ -120,8 +120,8 @@ trace-id/
 `response_events.jsonl` can be replayed with:
 
 ```bash
-tools/replay_trace.py TRACE_DIR
-tools/replay_trace.py TRACE_DIR --summary
+./opencode-go-codex replay TRACE_DIR
+./opencode-go-codex replay TRACE_DIR --summary
 ```
 
 Trace JSON is redacted for common key/token/password fields. Raw upstream files

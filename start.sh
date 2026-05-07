@@ -8,4 +8,8 @@ if [[ -z "${OPENCODE_GO_API_KEY:-}" && -z "${OPENAI_API_KEY:-}" ]]; then
   exit 1
 fi
 
-exec python3 ./opencode_go_codex.py "$@"
+if [[ -x ./opencode-go-codex ]]; then
+  exec ./opencode-go-codex "$@"
+fi
+
+exec go run ./cmd/opencode-go-codex "$@"

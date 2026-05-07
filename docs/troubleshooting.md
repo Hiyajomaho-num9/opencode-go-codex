@@ -77,7 +77,7 @@ Requests to `/v1/responses/compact` should use `deepseek-v4-flash` by default.
 Check:
 
 ```bash
-python3 opencode_go_codex.py doctor
+./opencode-go-codex doctor
 ```
 
 and confirm:
@@ -104,7 +104,7 @@ Debug steps:
 4. Replay the trace:
 
 ```bash
-tools/replay_trace.py TRACE_DIR --summary
+./opencode-go-codex replay TRACE_DIR --summary
 ```
 
 If these events are present, the adapter produced tool calls and the failure is

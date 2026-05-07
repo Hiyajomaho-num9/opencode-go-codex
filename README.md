@@ -34,6 +34,23 @@ codex -p deepseek-v4-pro
 codex -p deepseek-v4-flash
 ```
 
+## Build
+
+The Go adapter is the primary implementation. Build a single local binary:
+
+```bash
+go build -o opencode-go-codex ./cmd/opencode-go-codex
+```
+
+Cross-compile for Windows:
+
+```bash
+GOOS=windows GOARCH=amd64 go build -o opencode-go-codex.exe ./cmd/opencode-go-codex
+```
+
+The Go adapter is the only service implementation. Python is only used by the
+optional bundled `tools/web_search_mcp.py` helper.
+
 ## Start Manually
 
 ```bash
@@ -163,14 +180,14 @@ curl -N http://127.0.0.1:8768/v1/responses \
 Check local setup:
 
 ```bash
-python3 opencode_go_codex.py doctor
+./opencode-go-codex doctor
 ```
 
 Run local regression tests:
 
 ```bash
-python3 -m compileall -q adapter opencode_go_codex.py tools/web_search_mcp.py
-python3 -m unittest discover -s tests
+go test ./...
+go build -o opencode-go-codex ./cmd/opencode-go-codex
 ```
 
 Run a smoke test against a running adapter:
@@ -182,6 +199,6 @@ Run a smoke test against a running adapter:
 Replay or summarize a trace:
 
 ```bash
-tools/replay_trace.py /tmp/opencode-go-codex-trace/TRACE_ID --summary
-tools/replay_trace.py /tmp/opencode-go-codex-trace/TRACE_ID
+./opencode-go-codex replay /tmp/opencode-go-codex-trace/TRACE_ID --summary
+./opencode-go-codex replay /tmp/opencode-go-codex-trace/TRACE_ID
 ```

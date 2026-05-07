@@ -10,6 +10,7 @@ ENV_FILE="$ENV_DIR/env"
 UNIT_DIR="$HOME/.config/systemd/user"
 UNIT_FILE="$UNIT_DIR/opencode-go-codex.service"
 MCP_SCRIPT="$ROOT/tools/web_search_mcp.py"
+BINARY="$ROOT/opencode-go-codex"
 
 say() {
   printf '%s\n' "$*"
@@ -91,88 +92,12 @@ patch_config() {
     : > "$CONFIG"
   fi
 
-  python3 - "$CONFIG" "$MODEL_CATALOG" "$MCP_SCRIPT" <<'PY'
-import re
-import sys
-from pathlib import Path
+  "$BINARY" install-config "$CONFIG" "$MODEL_CATALOG" "$MCP_SCRIPT"
+}
 
-config = Path(sys.argv[1])
-model_catalog = sys.argv[2]
-mcp_script = sys.argv[3]
-text = config.read_text(encoding="utf-8")
-
-def set_root(key, value):
-    global text
-    line = f'{key} = "{value}"'
-    pattern = re.compile(rf'^{re.escape(key)}\s*=.*$', re.M)
-    if pattern.search(text):
-        text = pattern.sub(line, text, count=1)
-        return
-    first_table = re.search(r'^\[', text, re.M)
-    if first_table:
-        text = text[:first_table.start()] + line + "\n" + text[first_table.start():]
-    else:
-        text = text.rstrip() + "\n" + line + "\n"
-
-def set_root_raw(key, value):
-    global text
-    line = f'{key} = {value}'
-    pattern = re.compile(rf'^{re.escape(key)}\s*=.*$', re.M)
-    if pattern.search(text):
-        text = pattern.sub(line, text, count=1)
-        return
-    first_table = re.search(r'^\[', text, re.M)
-    if first_table:
-        text = text[:first_table.start()] + line + "\n" + text[first_table.start():]
-    else:
-        text = text.rstrip() + "\n" + line + "\n"
-
-def remove_table(name):
-    global text
-    pattern = re.compile(rf'^\[{re.escape(name)}\]\n.*?(?=^\[|\Z)', re.M | re.S)
-    text = pattern.sub("", text)
-
-def append_table(name, body):
-    global text
-    remove_table(name)
-    text = text.rstrip() + f"\n\n[{name}]\n{body.rstrip()}\n"
-
-set_root("model_catalog_json", model_catalog)
-set_root("model_reasoning_effort", "xhigh")
-set_root("model_verbosity", "low")
-set_root_raw("model_context_window", "512000")
-set_root_raw("model_auto_compact_token_limit", "400000")
-
-append_table("model_providers.OpenCodeGo", '''
-name = "OpenCodeGo"
-base_url = "http://127.0.0.1:8768/v1"
-wire_api = "responses"
-''')
-
-append_table("profiles.deepseek-v4-pro", '''
-model_provider = "OpenCodeGo"
-model = "deepseek-v4-pro"
-model_reasoning_effort = "xhigh"
-model_verbosity = "low"
-model_context_window = 512000
-model_auto_compact_token_limit = 400000
-''')
-
-append_table("profiles.deepseek-v4-flash", '''
-model_provider = "OpenCodeGo"
-model = "deepseek-v4-flash"
-model_reasoning_effort = "xhigh"
-model_verbosity = "low"
-model_context_window = 512000
-model_auto_compact_token_limit = 400000
-''')
-
-append_table("mcp_servers.web-search", f'''
-command = "{mcp_script}"
-''')
-
-config.write_text(text.strip() + "\n", encoding="utf-8")
-PY
+build_binary() {
+  say "Building Go adapter: $BINARY"
+  go build -o "$BINARY" ./cmd/opencode-go-codex
 }
 
 install_skill() {
@@ -216,7 +141,7 @@ verify_codex() {
 }
 
 main() {
-  need_cmd python3
+  need_cmd go
   need_cmd systemctl
   need_cmd systemd-analyze
   need_cmd curl
@@ -225,6 +150,7 @@ main() {
   say "Project: $ROOT"
   say "This will write a user service, service env, Codex profiles, and a DeepSeek-only model catalog."
 
+  build_binary
   read_key
   write_env
   write_service

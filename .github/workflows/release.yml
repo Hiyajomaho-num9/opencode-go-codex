@@ -1,0 +1,126 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example v0.1.0. Defaults to the current ref name."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release tag
+        id: vars
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          target="HEAD"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ inputs.tag }}" ]]; then
+            tag="${{ inputs.tag }}"
+          elif [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            tag="${GITHUB_REF_NAME}"
+            target="$tag"
+          else
+            tag="$(git describe --tags --exact-match 2>/dev/null || true)"
+          fi
+
+          if [[ -z "$tag" ]]; then
+            echo "A release tag is required. Push a v* tag or pass workflow_dispatch input tag." >&2
+            exit 1
+          fi
+
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "prefix=opencode-go-codex-$tag" >> "$GITHUB_OUTPUT"
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Test
+        run: |
+          go test ./...
+          go vet ./...
+
+      - name: Build binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+            go build -trimpath -ldflags="-s -w" \
+            -o "dist/${{ steps.vars.outputs.prefix }}-linux-amd64" \
+            ./cmd/opencode-go-codex
+
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
+            go build -trimpath -ldflags="-s -w" \
+            -o "dist/${{ steps.vars.outputs.prefix }}-windows-amd64.exe" \
+            ./cmd/opencode-go-codex
+
+      - name: Package source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          git archive --format=zip \
+            --prefix="${{ steps.vars.outputs.prefix }}/" \
+            -o "dist/${{ steps.vars.outputs.prefix }}-source.zip" \
+            "${{ steps.vars.outputs.target }}"
+
+      - name: Generate release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          tag="${{ steps.vars.outputs.tag }}"
+          target="${{ steps.vars.outputs.target }}"
+          previous_tag="$(git describe --tags --abbrev=0 "${target}^" 2>/dev/null || true)"
+
+          {
+            echo "## Assets"
+            echo
+            echo "- Source: \`${{ steps.vars.outputs.prefix }}-source.zip\`"
+            echo "- Linux amd64: \`${{ steps.vars.outputs.prefix }}-linux-amd64\`"
+            echo "- Windows amd64: \`${{ steps.vars.outputs.prefix }}-windows-amd64.exe\`"
+            echo
+            echo "## Changelog"
+            echo
+            if [[ -n "$previous_tag" ]]; then
+              git log --pretty=format:'- %s (%h)' "${previous_tag}..${target}"
+            else
+              git log --pretty=format:'- %s (%h)' "$target"
+            fi
+            echo
+          } > dist/release-notes.md
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: opencode-go-codex ${{ steps.vars.outputs.tag }}
+          body_path: dist/release-notes.md
+          fail_on_unmatched_files: true
+          files: |
+            dist/${{ steps.vars.outputs.prefix }}-source.zip
+            dist/${{ steps.vars.outputs.prefix }}-linux-amd64
+            dist/${{ steps.vars.outputs.prefix }}-windows-amd64.exe

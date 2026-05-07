@@ -52,6 +52,7 @@ export OPENCODE_GO_REASONING_EFFORT="max"
 export OPENCODE_GO_CODEX_PORT="8768"
 export OPENCODE_GO_TIMEOUT="900"
 export OPENCODE_GO_DEBUG_ROUTING="1"
+export OPENCODE_GO_TRACE_DIR="/tmp/opencode-go-codex-trace"
 ```
 
 Routing rules:
@@ -65,6 +66,14 @@ Routing rules:
 
 See `docs/deepseek-api-notes.md` for the exact DeepSeek-style Chat Completions
 fields forwarded by the adapter.
+
+More compatibility notes:
+
+- `docs/codex-compatibility.md`
+- `docs/tool-call-semantics.md`
+- `docs/model-capability-matrix.md`
+- `docs/troubleshooting.md`
+- `docs/testing.md`
 
 ## Codex Config
 
@@ -147,4 +156,32 @@ curl -N http://127.0.0.1:8768/v1/responses \
   -H "Authorization: Bearer $OPENCODE_GO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"deepseek-v4-flash","input":"Reply exactly OK.","stream":false,"max_output_tokens":32}'
+```
+
+## Debug And Test
+
+Check local setup:
+
+```bash
+python3 opencode_go_codex.py doctor
+```
+
+Run local regression tests:
+
+```bash
+python3 -m compileall -q adapter opencode_go_codex.py tools/web_search_mcp.py
+python3 -m unittest discover -s tests
+```
+
+Run a smoke test against a running adapter:
+
+```bash
+./smoke.sh
+```
+
+Replay or summarize a trace:
+
+```bash
+tools/replay_trace.py /tmp/opencode-go-codex-trace/TRACE_ID --summary
+tools/replay_trace.py /tmp/opencode-go-codex-trace/TRACE_ID
 ```

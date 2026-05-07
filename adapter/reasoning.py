@@ -35,6 +35,9 @@ def extract_reasoning_content(item):
     if decoded:
         return decoded
 
+    if item.get("reasoning_content"):
+        return str(item.get("reasoning_content"))
+
     content = item.get("content")
     if isinstance(content, str):
         return content

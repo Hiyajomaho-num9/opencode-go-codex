@@ -1,0 +1,65 @@
+name: Bug report
+description: Report a reproducible opencode-go-codex bug.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Screenshots-only logs are not actionable. Paste text logs and redact secrets.
+  - type: input
+    id: version
+    attributes:
+      label: opencode-go-codex version or commit
+    validations:
+      required: true
+  - type: input
+    id: codex
+    attributes:
+      label: Codex CLI version
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS and architecture
+      placeholder: Ubuntu 24.04 amd64
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Redacted config
+      description: Paste relevant ~/.codex/config.toml and environment values. Remove keys and tokens.
+      render: toml
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Full text logs
+      description: Do not upload screenshots-only logs.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: trace
+    attributes:
+      label: Trace summary
+      description: Run tools/replay_trace.py TRACE_DIR --summary and paste the output. Do not upload raw traces without reviewing secrets.
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction steps
+    validations:
+      required: true

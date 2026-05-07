@@ -50,9 +50,10 @@ def responses_input_to_messages(request, server=None):
             assistant = ensure_assistant()
             if content:
                 assistant["content"] = content if not assistant.get("content") else assistant["content"] + "\n" + content
-            reasoning_content = extract_reasoning_content(item)
-            if reasoning_content:
-                assistant["reasoning_content"] = reasoning_content
+            if item.get("type") == "reasoning" or item.get("encrypted_content") or item.get("reasoning_content"):
+                reasoning_content = extract_reasoning_content(item)
+                if reasoning_content:
+                    assistant["reasoning_content"] = reasoning_content
         else:
             flush_assistant()
             messages.append({"role": role, "content": content})

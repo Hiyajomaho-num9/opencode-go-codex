@@ -7,6 +7,9 @@ from .responses import make_response
 
 
 def write_sse(handler, event, data):
+    trace = getattr(handler, "trace", None)
+    if trace:
+        trace.append_response_event(event, data)
     handler.wfile.write(("event: " + event + "\n").encode("utf-8"))
     handler.wfile.write(("data: " + json_dumps(data) + "\n\n").encode("utf-8"))
     handler.wfile.flush()
@@ -78,6 +81,10 @@ def stream_chat_to_responses(handler, upstream_response, model):
     write_sse(handler, "response.created", {"type": "response.created", "response": created})
 
     for raw_line in upstream_response:
+        trace = getattr(handler, "trace", None)
+        if trace:
+            with (trace.path / "upstream_stream.raw").open("ab") as f:
+                f.write(raw_line)
         line = raw_line.decode("utf-8", "replace").strip()
         if not line or not line.startswith("data:"):
             continue
